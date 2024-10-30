@@ -3,6 +3,8 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var cors = require('cors'); 
+// const session = require('express-session')
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -13,7 +15,14 @@ const commentRouter = require('./routes/comment')
 
 const mongoose = require('./db')
 var app = express();
-
+// CORS 설정 추가. 매커니즘 찾아보기. 
+//1.서버가 ok 2.브라우저가 나갈때에 5173으로 나가되 실제로 접속되는건 3000번. (프록시)
+app.use(cors({
+  origin: 'http://localhost:5173', //여기서 요청오면 허용해줄게. 
+  credentials: true,
+  // methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  // allowedHeaders: ['Content-Type', 'Authorization']
+}));
 // view engine setup
 // app.set('views', path.join(__dirname, 'views'));
 // app.set('view engine', 'ejs');
@@ -23,9 +32,24 @@ var app = express();
 // app.set('view engine', 'ejs'); // 템플릿 엔진을 ejs로 설정
 
 app.use(logger('dev'));
-app.use(express.json());
+// app.use(미들웨어 or 라우터)
+app.use(express.json());//원래 body는 다 string인데 이걸 json으로 바꿔줌
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+
+
+const session = require('express-session')
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "<my-secret>", //|| 연산자는 왼쪽 값이 falsy일 때 오른쪽 값을 반환
+    resave : true,
+    saveUninitialized : true,
+    cookie : {
+      httpOnly : true ,
+      secure : false,
+    },
+  })
+);
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/hello-world',(req,res)=>{
@@ -57,6 +81,7 @@ app.use('/board',boardRouter);
 app.use('/comment',commentRouter);
 app.use('/birds',birdsRouter)
 // catch 404 and forward to error handler
+//import안하면 위에안들어가고 여기 url없으면 밑에 에러로들어감. (순서가중요)
 app.use(function(req, res, next) {
   next(createError(404));
 });
@@ -69,8 +94,9 @@ app.use(function(err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  // res.render('error');
-  res.json(res.locals) //이거 추가 
+  // res.render('error');//이게아니라 render라는건 주로 html로 주겟다는//
+  res.json(res.locals) //이거 html이 아니라 json으로 .  . . .  .
 });
+
 
 module.exports = app;
