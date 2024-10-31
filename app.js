@@ -11,6 +11,7 @@ var usersRouter = require('./routes/users');
 const boardRouter = require('./routes/board');
 const birdsRouter = require('./routes/birds');
 const commentRouter = require('./routes/comment')
+const todoRouter = require('./routes/todo')
 //localhost:3000 
 
 const mongoose = require('./db')
@@ -52,6 +53,17 @@ app.use(
 );
 app.use(express.static(path.join(__dirname, 'public')));
 
+//session 미들웨어 밑에서 사용가능 !! 
+app.use((req, res, next)=>{
+  // console.log("미들웨어",req.url) 
+  
+  if (!req.session.useHistory){
+    req.session.useHistory = []
+  } 
+  req.session.useHistory.push(req.url)
+  console.log("히스토리",req.session.useHistory)
+  next()//다음 미들웨어로 보내는애
+})
 app.get('/hello-world',(req,res)=>{
   console.log(req.headers);
   res.json({
@@ -79,7 +91,8 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/board',boardRouter);
 app.use('/comment',commentRouter);
-app.use('/birds',birdsRouter)
+app.use('/birds',birdsRouter);
+app.use('/todo', todoRouter);
 // catch 404 and forward to error handler
 //import안하면 위에안들어가고 여기 url없으면 밑에 에러로들어감. (순서가중요)
 app.use(function(req, res, next) {

@@ -10,4 +10,4 @@ mongoose.connect(MONGO_HOST, {
     console.error(err)
 })
 
-module.exports = mongoose ;
+module.exports = mongoose;

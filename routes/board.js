@@ -16,7 +16,7 @@ router.get('/', (req, res, next)=>{
             signed : false,//쿠키 자체를 암호화
             
         }); 
-        console.log(req)
+        // console.log(req)
         // console.log('모든 쿠키:', req.cookies);//요청에 담아서 쿠키를보내니까? req.
         // console.log('특정 쿠키:', req.cookies['my-cookie']);
 
@@ -47,7 +47,7 @@ router.get('/:id', (req, res, next)=>{
         if (req.session.boardPath){
 
         } else {
-            req.session.boardPath= []
+            req.session.boardPath= [] // <- 여기서 배열로 만들어줌!
         }
         req.session.boardPath.push(board.title)
         if (req.session.boardPath.length > 10){
