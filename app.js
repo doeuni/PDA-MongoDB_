@@ -89,7 +89,7 @@ app.delete('/hello-world',(req,res)=>{
 })
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/board',boardRouter);
+app.use('/api/board',boardRouter);
 app.use('/comment',commentRouter);
 app.use('/birds',birdsRouter);
 app.use('/todo', todoRouter);
